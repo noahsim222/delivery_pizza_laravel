@@ -99,4 +99,20 @@ class OrdersController extends Controller
             'data' => $order,
         ]);
     }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int $id
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function checkStatus($id)
+    {
+        $order = $this->repository->find($id);
+
+        return response()->json([
+            'data' => $order,
+        ]);
+    }
 }

@@ -19,6 +19,8 @@ class CreateItemsTable extends Migration
 		Schema::create('items', function(Blueprint $table) {
             $table->id();
             $table->integer('status')->default(0);
+            $table->unsignedBigInteger('category_id');
+            $table->foreign('category_id')->references('id')->on('categories');
             $table->string('img')->nullable();
 
             $table->timestamps();
