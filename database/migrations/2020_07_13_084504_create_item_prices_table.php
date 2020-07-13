@@ -5,9 +5,9 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * Class CreateOrderItemsTable.
+ * Class CreateItemPricesTable.
  */
-class CreateOrderItemsTable extends Migration
+class CreateItemPricesTable extends Migration
 {
 	/**
 	 * Run the migrations.
@@ -16,14 +16,11 @@ class CreateOrderItemsTable extends Migration
 	 */
 	public function up()
 	{
-		Schema::create('order_items', function(Blueprint $table) {
+		Schema::create('item_prices', function(Blueprint $table) {
             $table->id();
-			$table->unsignedBigInteger('order_id');
-            $table->foreign('order_id')->references('id')->on('orders');
-			$table->integer('qty');
-			$table->string('type')->nullable();
+			$table->unsignedBigInteger('currency_id');
+			$table->float('price')->default(0);
 			$table->unsignedBigInteger('item_id');
-            $table->foreign('item_id')->references('id')->on('items');
 
             $table->timestamps();
 		});
@@ -36,6 +33,6 @@ class CreateOrderItemsTable extends Migration
 	 */
 	public function down()
 	{
-		Schema::drop('order_items');
+		Schema::drop('item_prices');
 	}
 }

@@ -21,6 +21,10 @@ class CreateItemTranslationsTable extends Migration
             $table->string('name')->nullable();
             $table->string('title')->nullable();
             $table->text('description')->nullable();
+            $table->unsignedBigInteger('source_id');
+            $table->foreign('source_id')->references('id')->on('items');
+            $table->unsignedBigInteger('language_id');
+            $table->foreign('language_id')->references('id')->on('languages');
 
             $table->timestamps();
 		});

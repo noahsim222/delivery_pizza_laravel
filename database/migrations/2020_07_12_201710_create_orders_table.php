@@ -19,7 +19,9 @@ class CreateOrdersTable extends Migration
 		Schema::create('orders', function(Blueprint $table) {
             $table->id();
 			$table->unsignedBigInteger('currency_id');
+            $table->foreign('currency_id')->references('id')->on('currencies');
 			$table->unsignedBigInteger('delivery_info_id');
+            $table->foreign('delivery_info_id')->references('id')->on('delivery_info');
 			$table->bigInteger('user_id')->nullable();
 			$table->string('payment_method')->default('CASH');
 			$table->bigInteger('total_cost');
