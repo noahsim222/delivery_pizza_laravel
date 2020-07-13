@@ -2,15 +2,14 @@
 
 namespace App\Services;
 
+use App\Exceptions\UnexpectedErrorException;
 use App\Models\Item;
 use App\Models\Language;
 use App\Repositories\Contracts\ItemRepository;
-use App\Services\EntityService\BaseService;
 use App\Services\Traits\ServiceTranslateTable;
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Log\Logger;
 use Illuminate\Support\Arr;
-use Exception;
 use App\Services\Contracts\ItemService as ItemServiceInterface;
 
 /**
@@ -75,16 +74,16 @@ class ItemService  extends BaseService implements ItemServiceInterface
             $item->status = Item::STATUS_DRAFT;
             $item->category_id = array_get($data, 'category_id');
             $item->img = array_get($data, 'img');
-            
+
             if (!$item->save()) {
-                throw new Exception('Item was not saved to the database.');
+                throw new UnexpectedErrorException('Item was not saved to the database.');
             }
             $this->logger->info('Item was successfully saved to the database.');
 
             $this->storeTranslations($item, $data, $this->getTranslationSelectColumnsClosure());
-            $this->logger->info('Translations for the Item were successfully saved.', ['Item_id' => $item->id]);
+            $this->logger->info('Translations for the Item were successfully saved.', ['item_id' => $item->id]);
 
-        } catch (Exception $e) {
+        } catch (UnexpectedErrorException $e) {
             $this->rollback($e, 'An error occurred while storing an ', [
                 'data' => $data,
             ]);
@@ -115,14 +114,14 @@ class ItemService  extends BaseService implements ItemServiceInterface
             $item->img = array_get($data, 'img');
 
             if (!$item->save()) {
-                throw new Exception('An error occurred while updating a Item');
+                throw new UnexpectedErrorException('An error occurred while updating a Item');
             }
             $this->logger->info('Item was successfully updated.');
 
             $this->storeTranslations($item, $data, $this->getTranslationSelectColumnsClosure());
             $this->logger->info('Item translations was successfully updated.');
 
-        } catch (Exception $e) {
+        } catch (UnexpectedErrorException $e) {
             $this->rollback($e, 'An error occurred while updating an Items.', [
                 'id'   => $id,
                 'data' => $data,
@@ -155,12 +154,12 @@ class ItemService  extends BaseService implements ItemServiceInterface
             $bufferItem['name'] = $item->name;
 
             if (!$item->delete($id)) {
-                throw new Exception(
+                throw new UnexpectedErrorException(
                     'Item and Item translations was not deleted from database.'
                 );
             }
             $this->logger->info('Item Item was successfully deleted from database.');
-        } catch (Exception $e) {
+        } catch (UnexpectedErrorException $e) {
             $this->rollback($e, 'An error occurred while deleting an Item.', [
                 'id'   => $id,
             ]);

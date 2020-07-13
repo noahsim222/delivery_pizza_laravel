@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Traits\TableName;
 use Illuminate\Database\Eloquent\Model;
 use Prettus\Repository\Contracts\Transformable;
 use Prettus\Repository\Traits\TransformableTrait;
@@ -22,7 +23,7 @@ use Prettus\Repository\Traits\TransformableTrait;
  */
 class DeliveryInfo extends Model implements Transformable
 {
-    use TransformableTrait;
+    use TransformableTrait, TableName;
 
     /**
      * Table name

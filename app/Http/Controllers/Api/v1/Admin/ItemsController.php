@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\v1\Admin;
 
+use App\Services\Contracts\ItemService;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -31,15 +32,25 @@ class ItemsController extends Controller
     protected $validator;
 
     /**
+     * @var ItemService
+     */
+    protected $service;
+
+    /**
      * ItemsController constructor.
      *
      * @param ItemRepository $repository
      * @param ItemValidator $validator
+     * @param ItemService $service
      */
-    public function __construct(ItemRepository $repository, ItemValidator $validator)
-    {
+    public function __construct(
+        ItemRepository $repository,
+        ItemValidator $validator,
+        ItemService $service
+    ) {
         $this->repository = $repository;
         $this->validator  = $validator;
+        $this->service  = $service;
     }
 
     /**
@@ -72,7 +83,7 @@ class ItemsController extends Controller
 
             $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_CREATE);
 
-            $item = $this->repository->create($request->all());
+            $item = $this->service->store($request->all());
 
             $response = [
                 'message' => 'Item created.',

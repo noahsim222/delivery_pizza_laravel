@@ -14,10 +14,10 @@ interface ItemService extends BaseService
     /**
      * Store a newly created resource in storage
      *
-     * @param array $input
+     * @param array $data
      * @return Item
      */
-    public function store(array $input);
+    public function store(array $data);
 
     /**
      * Update block in the storage.

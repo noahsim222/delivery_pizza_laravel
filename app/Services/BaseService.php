@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\EntityService;
+namespace App\Services;
 
 use Prettus\Repository\Eloquent\BaseRepository;
 use Exception;
@@ -11,7 +11,7 @@ use Illuminate\Support\Arr;
 
 /**
  * Class BaseService
- * @package App\Services\EntityService
+ * @package App\Services
  */
 abstract class BaseService
 {

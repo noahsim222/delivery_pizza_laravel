@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\Traits\TableName;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Prettus\Repository\Contracts\Transformable;
 use Prettus\Repository\Traits\TransformableTrait;
 
@@ -13,7 +15,7 @@ use Prettus\Repository\Traits\TransformableTrait;
  */
 class ItemTranslations extends Model implements Transformable
 {
-    use TransformableTrait;
+    use TransformableTrait, TableName;
 
     /**
      * The attributes that are mass assignable.
@@ -24,6 +26,28 @@ class ItemTranslations extends Model implements Transformable
 		'name',
 		'title',
 		'description',
+		'source_id',
+		'language_id',
 	];
 
+
+    /**
+     * Get the content item that owns the translation.
+     *
+     * @return BelongsTo
+     */
+    public function source()
+    {
+        return $this->belongsTo(Item::class);
+    }
+
+    /**
+     * Get the language that owns the translation.
+     *
+     * @return BelongsTo
+     */
+    public function language()
+    {
+        return $this->belongsTo(Language::class);
+    }
 }
