@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\v1\Admin;
 
 
+use App\Services\Contracts\CategoryService;
 use Prettus\Validator\Contracts\ValidatorInterface;
 use Prettus\Validator\Exceptions\ValidatorException;
 use App\Http\Requests\CategoryCreateRequest;
@@ -29,15 +30,25 @@ class CategoriesController extends Controller
     protected $validator;
 
     /**
+     * @var CategoryService
+     */
+    protected $service;
+
+    /**
      * CategoriesController constructor.
      *
      * @param CategoryRepository $repository
      * @param CategoryValidator $validator
+     * @param CategoryService $service
      */
-    public function __construct(CategoryRepository $repository, CategoryValidator $validator)
-    {
+    public function __construct(
+        CategoryRepository $repository,
+        CategoryValidator $validator,
+        CategoryService $service
+    ) {
         $this->repository = $repository;
         $this->validator  = $validator;
+        $this->service  = $service;
     }
 
     /**
@@ -70,7 +81,7 @@ class CategoriesController extends Controller
 
             $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_CREATE);
 
-            $category = $this->repository->create($request->all());
+            $category = $this->service->store($request->all());
 
             $response = [
                 'message' => 'Category created.',
@@ -133,9 +144,10 @@ class CategoriesController extends Controller
     {
         try {
 
-            $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_UPDATE);
+            $this->validator->with($request->all())
+                ->passesOrFail(ValidatorInterface::RULE_UPDATE);
 
-            $category = $this->repository->update($request->all(), $id);
+            $category = $this->service->update($id, $request->all());
 
             $response = [
                 'message' => 'Category updated.',
@@ -163,7 +175,7 @@ class CategoriesController extends Controller
      */
     public function destroy($id)
     {
-        $deleted = $this->repository->delete($id);
+        $deleted = $this->service->delete($id);
 
         return response()->json([
             'message' => 'Category deleted.',

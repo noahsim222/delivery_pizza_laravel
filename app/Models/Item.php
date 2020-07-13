@@ -16,6 +16,9 @@ use Prettus\Repository\Traits\TransformableTrait;
  * @property int $status
  * @property string $img
  * @property int $category_id
+ * @property string $name
+ * @property string $title
+ * @property string $description
  * @package namespace App\Models;
  */
 class Item extends Model implements Transformable

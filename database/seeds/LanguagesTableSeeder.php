@@ -20,8 +20,8 @@ class LanguagesTableSeeder extends Seeder
             ),
             array(
                 'id' => '2',
-                'name' => 'de',
-                'code' => 'German'
+                'name' => 'German',
+                'code' => 'de'
             )
         );
         \Illuminate\Support\Facades\DB::table('languages')

@@ -41,7 +41,7 @@ trait ServiceTranslateTable
         $translations = [];
 
         foreach ($this->language->all() as $language) {
-            $translation = Arr::get($data, $language->short_name);
+            $translation = Arr::get($data, $language->code);
             $translation = array_filter(call_user_func($handler, $translation));
 
             if ($translation) {

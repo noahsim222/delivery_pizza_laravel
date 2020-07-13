@@ -81,7 +81,8 @@ class ItemsController extends Controller
     {
         try {
 
-            $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_CREATE);
+            $this->validator->with($request->all())
+                ->passesOrFail(ValidatorInterface::RULE_CREATE);
 
             $item = $this->service->store($request->all());
 
@@ -146,9 +147,10 @@ class ItemsController extends Controller
     {
         try {
 
-            $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_UPDATE);
+            $this->validator->with($request->all())
+                ->passesOrFail(ValidatorInterface::RULE_UPDATE);
 
-            $item = $this->repository->update($request->all(), $id);
+            $item = $this->service->update($id, $request->all());
 
             $response = [
                 'message' => 'Item updated.',

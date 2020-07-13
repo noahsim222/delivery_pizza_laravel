@@ -12,6 +12,8 @@ use Prettus\Repository\Traits\TransformableTrait;
 /**
  * Class Category.
  *
+ * @property string $icon
+ * @property string $name
  * @package namespace App\Models;
  */
 class Category extends Model implements Transformable

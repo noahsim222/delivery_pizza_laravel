@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\v1\Admin;
 
+use App\Services\Contracts\OrderService;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -31,15 +32,25 @@ class OrdersController extends Controller
     protected $validator;
 
     /**
+     * @var OrderService
+     */
+    protected $service;
+
+    /**
      * OrdersController constructor.
      *
      * @param OrderRepository $repository
      * @param OrderValidator $validator
+     * @param OrderService $service
      */
-    public function __construct(OrderRepository $repository, OrderValidator $validator)
-    {
+    public function __construct(
+        OrderRepository $repository,
+        OrderValidator $validator,
+        OrderService $service
+    ) {
         $this->repository = $repository;
         $this->validator  = $validator;
+        $this->service  = $service;
     }
 
     /**
@@ -72,7 +83,7 @@ class OrdersController extends Controller
 
             $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_CREATE);
 
-            $order = $this->repository->create($request->all());
+            $order = $this->service->store($request->all());
 
             $response = [
                 'message' => 'Order created.',
@@ -135,9 +146,10 @@ class OrdersController extends Controller
     {
         try {
 
-            $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_UPDATE);
+            $this->validator->with($request->all())
+                ->passesOrFail(ValidatorInterface::RULE_UPDATE);
 
-            $order = $this->repository->update($request->all(), $id);
+            $order = $this->service->update($id, $request->all());
 
             $response = [
                 'message' => 'Order updated.',
@@ -165,7 +177,7 @@ class OrdersController extends Controller
      */
     public function destroy($id)
     {
-        $deleted = $this->repository->delete($id);
+        $deleted = $this->service->delete($id);
 
         return response()->json([
             'message' => 'Order deleted.',

@@ -2,15 +2,13 @@
 
 namespace App\Http\Controllers\Api\v1\Admin;
 
-use Illuminate\Http\Request;
-
-use App\Http\Requests;
+use App\Services\Contracts\TypeService;
 use Prettus\Validator\Contracts\ValidatorInterface;
 use Prettus\Validator\Exceptions\ValidatorException;
-use App\Http\Requests\TypesCreateRequest;
-use App\Http\Requests\TypesUpdateRequest;
-use App\Repositories\Contracts\TypesRepository;
-use App\Validators\TypesValidator;
+use App\Http\Requests\TypeCreateRequest;
+use App\Http\Requests\TypeUpdateRequest;
+use App\Repositories\Contracts\TypeRepository;
+use App\Validators\TypeValidator;
 use App\Http\Controllers\Api\v1\Controller;
 
 /**
@@ -21,25 +19,35 @@ use App\Http\Controllers\Api\v1\Controller;
 class TypesController extends Controller
 {
     /**
-     * @var TypesRepository
+     * @var TypeRepository
      */
     protected $repository;
 
     /**
-     * @var TypesValidator
+     * @var TypeValidator
      */
     protected $validator;
 
     /**
+     * @var TypeService
+     */
+    protected $service;
+
+    /**
      * TypesController constructor.
      *
-     * @param TypesRepository $repository
-     * @param TypesValidator $validator
+     * @param TypeRepository $repository
+     * @param TypeValidator $validator
+     * @param TypeService $service
      */
-    public function __construct(TypesRepository $repository, TypesValidator $validator)
-    {
+    public function __construct(
+        TypeRepository $repository,
+        TypeValidator $validator,
+        TypeService $service
+    ) {
         $this->repository = $repository;
         $this->validator  = $validator;
+        $this->service  = $service;
     }
 
     /**
@@ -60,19 +68,20 @@ class TypesController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  TypesCreateRequest $request
+     * @param  TypeCreateRequest $request
      *
      * @return \Illuminate\Http\Response
      *
      * @throws \Prettus\Validator\Exceptions\ValidatorException
      */
-    public function store(TypesCreateRequest $request)
+    public function store(TypeCreateRequest $request)
     {
         try {
 
-            $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_CREATE);
+            $this->validator->with($request->all())
+                ->passesOrFail(ValidatorInterface::RULE_CREATE);
 
-            $type = $this->repository->create($request->all());
+            $type = $this->service->store($request->all());
 
             $response = [
                 'message' => 'Types created.',
@@ -124,20 +133,20 @@ class TypesController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  TypesUpdateRequest $request
+     * @param  TypeUpdateRequest $request
      * @param  string            $id
      *
      * @return Response
      *
      * @throws \Prettus\Validator\Exceptions\ValidatorException
      */
-    public function update(TypesUpdateRequest $request, $id)
+    public function update(TypeUpdateRequest $request, $id)
     {
         try {
 
             $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_UPDATE);
 
-            $type = $this->repository->update($request->all(), $id);
+            $type = $this->service->update($id, $request->all());
 
             $response = [
                 'message' => 'Types updated.',
@@ -166,7 +175,7 @@ class TypesController extends Controller
      */
     public function destroy($id)
     {
-        $deleted = $this->repository->delete($id);
+        $deleted = $this->service->delete($id);
 
         return response()->json([
             'message' => 'Types deleted.',

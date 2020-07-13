@@ -19,11 +19,12 @@ Route::group([
     'namespace'  => 'Api\\v1',
 ], function () {
 
-    // Items
+    // Admin
     Route::group([
         'prefix' => 'admin',
         'namespace'  => 'Admin',
     ], function () {
+
         // Items
         Route::group([
             'prefix' => 'items'
@@ -40,6 +41,44 @@ Route::group([
             Route::post('/create', [
                 'as' => 'create',
                 'uses' => 'ItemsController@store',
+            ]);
+        });
+
+        // Category
+        Route::group([
+            'prefix' => 'categories'
+        ], function () {
+
+            Route::get('/', [
+                'as' => 'index',
+                'uses' => 'CategoriesController@index',
+            ]);
+            Route::get('/detail/{id}', [
+                'as' => 'index',
+                'uses' => 'CategoriesController@index',
+            ]);
+            Route::post('/create', [
+                'as' => 'create',
+                'uses' => 'CategoriesController@store',
+            ]);
+        });
+
+        // Type
+        Route::group([
+            'prefix' => 'types'
+        ], function () {
+
+            Route::get('/', [
+                'as' => 'index',
+                'uses' => 'TypesController@index',
+            ]);
+            Route::get('/detail/{id}', [
+                'as' => 'index',
+                'uses' => 'TypesController@index',
+            ]);
+            Route::post('/create', [
+                'as' => 'create',
+                'uses' => 'TypesController@store',
             ]);
         });
 
@@ -90,6 +129,7 @@ Route::group([
             ]);
         });
     });
+
     // Items
     Route::group([
         'prefix' => 'items'
