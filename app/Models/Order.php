@@ -16,11 +16,17 @@ use Prettus\Repository\Traits\TransformableTrait;
  * @property int $payment_method
  * @property int $total_cost
  * @property int $status
+ * @property int $no
  * @package namespace App\Models;
  */
 class Order extends Model implements Transformable
 {
     use TransformableTrait, TableName;
+
+    /**
+     * Accepted to new order
+     */
+    const STATUS_CANCELLED = -2;
 
     /**
      * Accepted to new order
@@ -50,6 +56,15 @@ class Order extends Model implements Transformable
 		'payment_method',
 		'total_cost',
 		'status',
+		'no',
 	];
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItems::class);
+    }
 
 }

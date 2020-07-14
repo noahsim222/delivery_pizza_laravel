@@ -2,15 +2,20 @@
 
 namespace App\Services;
 
+use App\Exceptions\UnexpectedErrorException;
+use App\Models\Currency;
 use App\Models\DeliveryInfo;
+use App\Models\Item;
 use App\Models\Order;
 use App\Models\Language;
+use App\Models\OrderItems;
 use App\Repositories\Contracts\DeliveryInfoRepository;
 use App\Repositories\Contracts\OrderRepository;
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Log\Logger;
 use Exception;
 use App\Services\Contracts\OrderService as OrderServiceInterface;
+use Illuminate\Support\Arr;
 
 /**
  * @method bool destroy
@@ -82,14 +87,31 @@ class OrderService  extends BaseService implements OrderServiceInterface
 
             /** @var DeliveryInfo $deliveryInfo */
             $deliveryInfo = $this->deliveryInfoRepository->create(array_get($data, 'delivery'));
+
+            $currency = Currency::where('code', array_get($data, 'selectedCurrency'))->first();
+
+            $order->currency_id = $currency->id;
+
             $order->delivery_info_id = $deliveryInfo->id;
-            
+
+            $order->no = rand(11111, 99999);
+
+            $inputItems = array_get($data, 'items');
+
+            $order->total_cost = $this->getTotalCost($inputItems, $currency->code);
+
             if (!$order->save()) {
-                throw new Exception('Order was not saved to the database.');
+                throw new UnexpectedErrorException('Order was not saved to the database.');
             }
+
+            foreach ($inputItems as $item) {
+                Arr::forget($item, 'prices');
+                $order->orderItems()->create($item);
+            }
+
             $this->logger->info('Order was successfully saved to the database.');
 
-        } catch (Exception $e) {
+        } catch (UnexpectedErrorException $e) {
             $this->rollback($e, 'An error occurred while storing an ', [
                 'data' => $data,
             ]);
@@ -97,6 +119,24 @@ class OrderService  extends BaseService implements OrderServiceInterface
 
         $this->commit();
         return $order;
+    }
+
+    /**
+     * Calculate total cost
+     *
+     * @param $itemsInput
+     * @param $currencyCode
+     * @return float|int
+     */
+    protected function getTotalCost($itemsInput, $currencyCode) {
+        $totalCost = 0;
+        foreach ($itemsInput as $item) {
+            /** @var Item $itemModel */
+            $itemModel= Item::find($item['item_id']);
+            $itemPrice = $itemModel->getPricesDataAttribute()[$currencyCode];
+            $totalCost += $item['qty'] * $itemPrice;
+        }
+        return $totalCost;
     }
 
     /**
@@ -117,11 +157,11 @@ class OrderService  extends BaseService implements OrderServiceInterface
             $order = $this->repository->find($id);
 
             if (!$order->save()) {
-                throw new Exception('An error occurred while updating a Order');
+                throw new UnexpectedErrorException('An error occurred while updating a Order');
             }
             $this->logger->info('Order was successfully updated.');
 
-        } catch (Exception $e) {
+        } catch (UnexpectedErrorException $e) {
             $this->rollback($e, 'An error occurred while updating an Orders.', [
                 'id'   => $id,
                 'data' => $data,
@@ -153,12 +193,12 @@ class OrderService  extends BaseService implements OrderServiceInterface
             $bufferOrder['name'] = $order->name;
 
             if (!$order->delete($id)) {
-                throw new Exception(
+                throw new UnexpectedErrorException(
                     'Order and Order translations was not deleted from database.'
                 );
             }
             $this->logger->info('Order Order was successfully deleted from database.');
-        } catch (Exception $e) {
+        } catch (UnexpectedErrorException $e) {
             $this->rollback($e, 'An error occurred while deleting an Order.', [
                 'id'   => $id,
             ]);

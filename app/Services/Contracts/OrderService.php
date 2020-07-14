@@ -14,10 +14,10 @@ interface OrderService extends BaseService
     /**
      * Store a newly created resource in storage
      *
-     * @param array $input
-     * @return Order
+     * @param array $data
+     * @return mixed
      */
-    public function store(array $input);
+    public function store(array $data);
 
     /**
      * Update block in the storage.

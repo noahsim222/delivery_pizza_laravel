@@ -102,7 +102,7 @@ class Item extends Model implements Transformable
      *
      * @return array
      */
-    protected function getPricesDataAttribute()
+    public function getPricesDataAttribute()
     {
         $prices = [];
 

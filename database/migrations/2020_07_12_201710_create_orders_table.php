@@ -25,6 +25,7 @@ class CreateOrdersTable extends Migration
 			$table->bigInteger('user_id')->nullable();
 			$table->string('payment_method')->default('CASH');
 			$table->bigInteger('total_cost');
+			$table->bigInteger('no');
 			$table->integer('status')->default(0);
 
             $table->timestamps();

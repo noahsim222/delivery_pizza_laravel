@@ -179,10 +179,10 @@ Route::group([
 
         Route::post('/create', [
             'as' => 'create',
-            'uses' => 'OrdersController@create',
+            'uses' => 'OrdersController@store',
         ]);
 
-        Route::get('/check/{id}', [
+        Route::get('/check', [
             'as' => 'checkStatus',
             'uses' => 'OrdersController@checkStatus',
         ]);

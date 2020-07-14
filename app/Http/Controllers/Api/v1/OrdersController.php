@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use App\Models\Order;
+use App\Services\OrderService;
+use Illuminate\Http\Request;
 use Prettus\Validator\Contracts\ValidatorInterface;
 use Prettus\Validator\Exceptions\ValidatorException;
 use App\Http\Requests\OrderCreateRequest;
@@ -26,15 +29,25 @@ class OrdersController extends Controller
     protected $validator;
 
     /**
+     * @var OrderService
+     */
+    protected $service;
+
+    /**
      * OrdersController constructor.
      *
      * @param OrderRepository $repository
      * @param OrderValidator $validator
+     * @param OrderService $service
      */
-    public function __construct(OrderRepository $repository, OrderValidator $validator)
-    {
+    public function __construct(
+        OrderRepository $repository,
+        OrderValidator $validator,
+        OrderService $service
+    ) {
         $this->repository = $repository;
         $this->validator  = $validator;
+        $this->service  = $service;
     }
 
     /**
@@ -55,11 +68,9 @@ class OrdersController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  OrderCreateRequest $request
-     *
-     * @return \Illuminate\Http\Response
-     *
-     * @throws \Prettus\Validator\Exceptions\ValidatorException
+     * @param OrderCreateRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Throwable
      */
     public function store(OrderCreateRequest $request)
     {
@@ -67,10 +78,11 @@ class OrdersController extends Controller
 
             $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_CREATE);
 
-            $order = $this->repository->create($request->all());
+            $order = $this->service->store($request->all());
 
             $response = [
-                'message' => 'Order created.',
+                'code' => 20000,
+                'message' => 'Your order has been accepted. The approximate delivery time of the order is 60 minutes',
                 'data'    => $order->toArray(),
             ];
 
@@ -78,6 +90,7 @@ class OrdersController extends Controller
 
         } catch (ValidatorException $e) {
             return response()->json([
+                'code' => 52000,
                 'error'   => true,
                 'message' => $e->getMessageBag()
             ]);
@@ -101,18 +114,23 @@ class OrdersController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Check order status
      *
-     * @param  int $id
-     *
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function checkStatus($id)
+    public function checkStatus(Request $request)
     {
-        $order = $this->repository->find($id);
+        $no = array_get($request->all(), 'no');
+        /** @var Order $order */
+        $order = $this->repository->where('no', $no)->first();
 
         return response()->json([
-            'data' => $order,
+            'code' => 20000,
+            'data' => [
+                'status' => $order->status,
+                'statusMessage' => order_status_message($order->status)
+            ],
         ]);
     }
 }
