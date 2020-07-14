@@ -6,6 +6,7 @@ use App\Models\Traits\TableName;
 use App\Models\Traits\TranslationTable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Arr;
 use Prettus\Repository\Contracts\Transformable;
 use Prettus\Repository\Traits\TransformableTrait;
 
@@ -18,6 +19,8 @@ use Prettus\Repository\Traits\TransformableTrait;
  * @property int $category_id
  * @property string $name
  * @property string $title
+ * @property ItemPrices $prices
+ * @property Category $category
  * @property string $description
  * @package namespace App\Models;
  */
@@ -55,6 +58,18 @@ class Item extends Model implements Transformable
 	];
 
     /**
+     * The accessors to append to the model's array form..
+     *
+     * @var array
+     */
+    protected $appends = [
+        'name',
+        'title',
+        'description',
+        'prices_data',
+    ];
+
+    /**
      * The languages that belong to the article item.
      *
      * @return BelongsToMany
@@ -65,15 +80,39 @@ class Item extends Model implements Transformable
     }
 
     /**
-     * The accessors to append to the model's array form..
+     * Category
      *
-     * @var array
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    protected $appends = [
-        'name',
-        'title',
-        'description',
-    ];
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function prices()
+    {
+        return $this->hasMany(ItemPrices::class);
+    }
+
+    /**
+     * Prices get
+     *
+     * @return array
+     */
+    protected function getPricesDataAttribute()
+    {
+        $prices = [];
+
+        foreach ($this->prices as $price) {
+            if ($price) {
+                Arr::set($prices, $price->currency_name, $price->price);
+            }
+        }
+        return $prices;
+    }
 
     /**
      * Get translated name.

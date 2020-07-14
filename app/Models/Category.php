@@ -12,8 +12,10 @@ use Prettus\Repository\Traits\TransformableTrait;
 /**
  * Class Category.
  *
+ * @property int $id
  * @property string $icon
  * @property string $name
+ * @property Item $items
  * @package namespace App\Models;
  */
 class Category extends Model implements Transformable
@@ -45,6 +47,14 @@ class Category extends Model implements Transformable
     protected $appends = [
         'name'
     ];
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function items()
+    {
+        return $this->hasMany(Item::class);
+    }
 
     /**
      * The languages that belong to the article item.

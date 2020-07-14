@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use App\Presenters\ItemPresenter;
 use App\Repositories\Contracts\ItemRepository;
+use Illuminate\Http\Request;
 
 /**
  * Class ItemsController.
@@ -29,16 +31,25 @@ class ItemsController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function index()
+    public function index(Request $request)
     {
-        $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
-        $items = $this->repository->all();
+        $data = $request->all();
+        $limit = array_get($data, 'limit', 12);
 
-        return response()->json([
-            'data' => $items,
-        ]);
+        $this->repository
+            ->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
+
+        $items = $this->repository
+            ->setPresenter(ItemPresenter::class)
+            ->orderBy('created_at', 'DESC')
+            ->paginate($limit);
+
+        return response()->json(array_merge([
+            'code' => 20000,
+        ], $items));
     }
 
     /**

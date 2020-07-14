@@ -22,12 +22,13 @@ class ItemTransformer extends TransformerAbstract
     public function transform(Item $model)
     {
         return [
-            'id'         => (int) $model->id,
-
-            /* place your other model properties here */
-
-            'created_at' => $model->created_at,
-            'updated_at' => $model->updated_at
+            'id'          => (int) $model->id,
+            'img'         => $model->img,
+            'name'        => $model->name,
+            'prices'      => $model->prices_data,
+            'category'    => $model->category->name,
+            'title'       => $model->title,
+            'description' => $model->description
         ];
     }
 }

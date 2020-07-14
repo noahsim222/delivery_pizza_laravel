@@ -36,6 +36,12 @@ class ItemRepositoryEloquent extends BaseRepository implements ItemRepository
         return ItemValidator::class;
     }
 
+    /**
+     * @var string[]
+     */
+    protected $fieldSearchable = [
+        'category_id'
+    ];
 
     /**
      * Boot up the repository, pushing criteria

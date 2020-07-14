@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use App\Presenters\CategoryPresenter;
 use App\Repositories\Contracts\CategoryRepository;
 use App\Validators\CategoryValidator;
 
@@ -40,11 +41,11 @@ class CategoriesController extends Controller
     public function index()
     {
         $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
-        $categories = $this->repository->all();
+        $categories = $this->repository->setPresenter(CategoryPresenter::class)->all();
 
-        return response()->json([
-            'data' => $categories,
-        ]);
+        return response()->json(array_merge([
+            'code' => 20000,
+        ], $categories));
     }
 
     /**

@@ -10,6 +10,12 @@ use Prettus\Repository\Traits\TransformableTrait;
 /**
  * Class Currency.
  *
+ * @property string $name
+ * @property string $code
+ * @property string $symbol
+ * @property int $precision
+ * @property string $thousand_separator
+ * @property string $decimal_separator
  * @package namespace App\Models;
  */
 class Currency extends Model implements Transformable

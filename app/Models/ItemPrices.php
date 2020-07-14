@@ -10,6 +10,11 @@ use Prettus\Repository\Traits\TransformableTrait;
 /**
  * Class ItemPrices.
  *
+ * @property Currency $currency
+ * @property string $currency_name
+ * @property float $price
+ * @property int $currency_id
+ * @property int $item_id
  * @package namespace App\Models;
  */
 class ItemPrices extends Model implements Transformable
@@ -26,5 +31,44 @@ class ItemPrices extends Model implements Transformable
 		'price',
 		'item_id',
 	];
+
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = [
+        'currency_name',
+    ];
+
+    /**
+     * The attributes that should be visible in arrays.
+     *
+     * @var array
+     */
+    protected $visible = [
+        'currency_name',
+        'price',
+    ];
+
+    /**
+     * Relation currency
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function currency()
+    {
+        return $this->belongsTo(Currency::class);
+    }
+
+    /**
+     * Relation currency
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function getCurrencyNameAttribute()
+    {
+        return $this->currency->code;
+    }
 
 }

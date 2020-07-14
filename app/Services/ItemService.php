@@ -3,7 +3,9 @@
 namespace App\Services;
 
 use App\Exceptions\UnexpectedErrorException;
+use App\Models\Currency;
 use App\Models\Item;
+use App\Models\ItemPrices;
 use App\Models\Language;
 use App\Repositories\Contracts\ItemRepository;
 use App\Services\Traits\ServiceTranslateTable;
@@ -80,6 +82,8 @@ class ItemService  extends BaseService implements ItemServiceInterface
             }
             $this->logger->info('Item was successfully saved to the database.');
 
+            $this->addPrice($item->id, array_get($data, 'prices'));
+
             $this->storeTranslations($item, $data, $this->getTranslationSelectColumnsClosure());
             $this->logger->info('Translations for the Item were successfully saved.', ['item_id' => $item->id]);
 
@@ -91,6 +95,25 @@ class ItemService  extends BaseService implements ItemServiceInterface
 
         $this->commit();
         return $item;
+    }
+
+    /**
+     * @param $itemId
+     * @param array $data
+     */
+    private function addPrice($itemId, array $data)
+    {
+        foreach ($data as $key => $value) {
+            $currencyModel = Currency::where('code', $key)->first();
+            if ($currencyModel) {
+                ItemPrices::updateOrCreate([
+                    'currency_id' => $currencyModel->id,
+                    'item_id'     => $itemId,
+                ],[
+                    'price'       => $value['price'],
+                ]);
+            }
+        }
     }
 
     /**
