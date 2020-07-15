@@ -24,6 +24,7 @@ class CategoryTransformer extends TransformerAbstract
         return [
             'id'          => (int) $model->id,
             'name'        => $model->name,
+            'icon'        => $model->icon,
             'itemsCount'  => $model->items()->count(),
         ];
     }
