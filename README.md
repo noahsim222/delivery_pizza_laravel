@@ -1,5 +1,5 @@
 ## Pizza delivery service API
-[![IMAGE ALT TEXT HERE](http://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](https://www.youtube.com/watch?v=R-N6985y-eU)
+[![Pizza delivery service API](https://ucarecdn.com/ff1fd9d1-400d-4f0a-ad40-4907fbcf3c5f/youtube.png)](https://www.youtube.com/watch?v=R-N6985y-eU)
 
 ## DEMO
 https://pizza.achilov.dev
