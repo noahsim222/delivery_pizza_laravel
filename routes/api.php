@@ -19,6 +19,27 @@ Route::group([
     'namespace'  => 'Api\\v1',
 ], function () {
 
+    // Items
+    Route::group([
+        'prefix' => 'auth'
+    ], function () {
+
+        Route::post('/otp', [
+            'as' => 'otp',
+            'uses' => 'AuthController@otp',
+        ]);
+
+        Route::post('/check-otp', [
+            'as' => 'checkOtp',
+            'uses' => 'AuthController@checkOtp',
+        ]);
+
+        Route::post('/check-token', [
+            'as' => 'checktoken',
+            'uses' => 'AuthController@checktoken',
+        ]);
+    });
+
     // Admin
     Route::group([
         'prefix' => 'admin',
